@@ -1,26 +1,48 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react"
+import logo from "./logo.svg"
+import "./App.css"
+import { getHeroDetail } from "./api"
+import { count } from "console"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface IResponse {
+  id: number
+  name: string
+  avatar: string
+  description: string
 }
 
-export default App;
+function App() {
+  const [text, setText] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState<IResponse | null>(null)
+  const handleGetHeroDetail = async () => {
+    try {
+      setLoading(true)
+      const response = await getHeroDetail(text)
+      setData(response)
+      setLoading(false)
+    } catch (error) {}
+  }
+
+  return (
+    <div className="App">
+      <label htmlFor="search">Search</label>
+      <input
+        id="search"
+        type="text"
+        placeholder="Hero name"
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value)
+        }}
+      />
+      <button onClick={() => handleGetHeroDetail()}>Submit</button>
+
+      {loading && <div>loading</div>}
+
+      {data && <div>{data.name}</div>}
+    </div>
+  )
+}
+
+export default App
